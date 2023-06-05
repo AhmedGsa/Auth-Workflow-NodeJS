@@ -11,7 +11,7 @@ Developed with Express and MongoDB
 npm install && npm start
 ```
 
-don't forget to add .env file contain the following variables:
+Don't forget to add .env file that contains the following variables:
 
 - MONGO_URI
 - PORT
