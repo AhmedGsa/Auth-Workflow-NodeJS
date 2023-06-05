@@ -57,9 +57,40 @@ const confirmEmail = async (req, res) => {
     }
 }
 
+const resendVerificationEmail = async (req, res) => {
+    const {email} = req.body;
+    if(!email) {
+        throw new BadRequestError("Please provide email!");
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new NotFoundError("There is no user with provided email!");
+    }
+    if(user.confirmed) {
+        throw new BadRequestError("Your account is already confirmed!");
+    }
+    await sendVerificationEmail(user._id, email);
+    return res.status(200).json({ msg: "Email resent successfully!" });
+}
+
+const forgetPassword = async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        throw new BadRequestError("Please provide an email!");
+    }
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+        throw new NotFound("There is no user with provided email!");
+    }
+    await sendPasswordResetEmail(email);
+    return res.status(200).json({ msg: "Email sent successfully!" });
+}
+
 module.exports = {
     login,
     register,
     logout,
-    confirmEmail
+    confirmEmail,
+    resendVerificationEmail,
+    forgetPassword
 }
