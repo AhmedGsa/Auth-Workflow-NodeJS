@@ -128,6 +128,24 @@ const resetPassword = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res) => {
+    const { newPassword, currentPassword } = req.body;
+    if(!newPassword || !currentPassword) {
+        throw new BadRequestError("Please provide required fields!");
+    }
+    const user = await User.findById(req.user.userID);
+    const isMatch = await user.verifyPass(currentPassword);
+    if (!isMatch) {
+        throw new BadRequestError("Wrong password!");
+    } else {
+        const salt = await bcrypt.genSalt(10);
+        const newPass = await bcrypt.hash(newPassword, salt);
+        await User.findOneAndUpdate({ _id: req.user.userID }, { password: newPass });
+        res.cookie("token", "");
+        return res.status(200).json({ msg: "Password changed successfully!" })
+    }
+}
+
 module.exports = {
     login,
     register,
@@ -136,5 +154,6 @@ module.exports = {
     resendVerificationEmail,
     forgetPassword,
     checkPasswordResetToken,
-    resetPassword
+    resetPassword,
+    changePassword
 }

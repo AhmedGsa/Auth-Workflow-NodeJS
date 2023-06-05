@@ -2,10 +2,12 @@ const express = require('express');
 require('dotenv').config();
 require('express-async-errors');
 const connectDB = require('./db/connect');
+const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/auth');
 const app = express();
 // middleware
 app.use(express.json());
+app.use(cookieParser());
 // routes
 app.use('/api/v1/auth', authRouter);
 
