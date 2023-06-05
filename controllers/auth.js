@@ -1,5 +1,5 @@
 const User = require("../models/User")
-//const Token = require("../models/VerifyToken")
+const Token = require("../models/VerifyToken")
 const { BadRequestError, UnauthorizedError, NotFoundError } = require("../errors/index")
 const { StatusCodes } = require("http-status-codes")
 const { sendVerificationEmail, sendPasswordResetEmail } = require("../utils/send-emails")
@@ -86,11 +86,55 @@ const forgetPassword = async (req, res) => {
     return res.status(200).json({ msg: "Email sent successfully!" });
 }
 
+const checkPasswordResetToken = async (req, res) => {
+    const { token } = req.body;
+    if (isJWT(token)) {
+        const dbToken = await Token.findOne({ token });
+        try {
+            const payload = await jwt.verify(token, process.env.JWT_VERIFY_SECRET);
+        } catch (error) {
+            return res.status(200).json({ valid: false, msg: "Token is invalid!" });
+        }
+        if (dbToken && dbToken.type === "reset") {
+            return res.status(200).json({ valid: true, msg: "Token is valid!" });
+        } else {
+            return res.status(200).json({ valid: false, msg: "Token is invalid!" });
+        }
+    } else {
+        throw new NotFoundError("Route doesn't exist!");
+    }
+}
+
+const resetPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+    if (isJWT(token) && password === confirmPassword) {
+        let payload;
+        try {
+            payload = await jwt.verify(token, process.env.JWT_VERIFY_SECRET);
+        } catch (error) {
+            throw new UnauthorizedError("Link has expired!")
+        }
+        const salt = await bcrypt.genSalt(10);
+        const newPassword = await bcrypt.hash(password, salt);
+        await User.findOneAndUpdate({email: payload.email},{password: newPassword});
+        return res.status(200).json({msg: "Password Updated Successfully!"});
+    } else {
+        if(password !== confirmPassword) {
+            throw new BadRequestError("Passwords doesn't match!")
+        } else {
+            throw new UnauthorizedError("Link has expired!")
+        }
+    }
+}
+
 module.exports = {
     login,
     register,
     logout,
     confirmEmail,
     resendVerificationEmail,
-    forgetPassword
+    forgetPassword,
+    checkPasswordResetToken,
+    resetPassword
 }
