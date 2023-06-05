@@ -13,13 +13,13 @@ npm install && npm start
 
 don't forget to add .env file contain the following variables:
 
-MONGO_URI
-PORT
-JWT_SECRET
-JWT_VERIFY_SECRET
-BASE_URL (for ex "http://localhost:5000")
-EMAIL (the email you use to send email with nodemailer)
-EMAIL_PASSWORD
+- MONGO_URI
+- PORT
+- JWT_SECRET
+- JWT_VERIFY_SECRET
+- BASE_URL (for ex "http://localhost:5000")
+- EMAIL (the email you use to send email with nodemailer)
+- EMAIL_PASSWORD
 
 
 ## Functionality
