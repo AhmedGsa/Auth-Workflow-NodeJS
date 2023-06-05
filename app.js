@@ -4,12 +4,18 @@ require('express-async-errors');
 const connectDB = require('./db/connect');
 const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/auth');
+const errorHandler = require('./middlewares/error-handler');
 const app = express();
+
 // middleware
 app.use(express.json());
 app.use(cookieParser());
+
 // routes
 app.use('/api/v1/auth', authRouter);
+
+// error handler
+app.use(errorHandler);
 
 const port = process.env.PORT;
 const start = async () => {
