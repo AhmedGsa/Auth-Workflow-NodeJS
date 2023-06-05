@@ -33,7 +33,16 @@ const register = async (req, res, next) => {
     return res.status(StatusCodes.CREATED).json({ userID: user._id, email: user.email, fullName: user.fullName, confirmed: user.confirmed});
 }
 
+const logout = (req, res) => {
+    res.cookie("token", "", {
+        httpOnly: true,
+        maxAge: 1
+    })
+    res.status(StatusCodes.OK).json({ msg: "Logged out successfully" })
+}
+
 module.exports = {
     login,
-    register
+    register,
+    logout
 }
