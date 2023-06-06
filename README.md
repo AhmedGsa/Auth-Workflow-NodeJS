@@ -1,6 +1,6 @@
 # Auth Workflow with NodeJS
 
-This is a workflow that conrains all the controllers related to auth with NodeJS, you can use it directly in your project.
+This is a workflow that contains all the controllers related to auth with NodeJS, you can use it directly in your project.
 
 Developed with Express and MongoDB
 
